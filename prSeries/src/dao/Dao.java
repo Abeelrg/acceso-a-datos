@@ -11,7 +11,7 @@ public interface Dao<T> {
 
 	public ArrayList<T> buscarTodos();
 
-	public T buscarPorID(int i);
+	public T buscarPorId(int i);
 
 	public void insertar(T t);
 
