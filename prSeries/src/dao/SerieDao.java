@@ -152,7 +152,11 @@ public class SerieDao extends ObjetoDao implements InterfazDao<Serie> {
 	@Override
 	public void borrar(Serie t) {
 		// TODO Auto-generated method stub
-
+		/*
+		 * Habrá que usar TemporadaDao.borrar
+		 * y SerieDao.obtenerTemporadas
+		 * y despues de todo se borra la serie.
+		 */
 	}
 
 }
