@@ -32,8 +32,22 @@ public class SerieDao extends ObjetoDao implements InterfazDao<Serie> {
 			ResultSet rs = ps.executeQuery();
 
 			while (rs.next()) {
+				ArrayList<Temporada> temporadas = new ArrayList<Temporada>();
 				Serie serie = new Serie(rs.getInt("id"), rs.getString("titulo"), rs.getInt("edad"),
 						rs.getString("plataforma"), null);
+
+				String query_temporadas = "select * from temporadas where serie_id = ?";
+				PreparedStatement ps_temporadas = connection.prepareStatement(query_temporadas);
+				ps_temporadas.setInt(1, rs.getInt("id"));
+				ResultSet rs_temporadas = ps_temporadas.executeQuery();
+
+				while (rs_temporadas.next()) {
+					Temporada temporada = new Temporada(rs_temporadas.getInt("id"),
+							rs_temporadas.getInt("num_temporada"), rs_temporadas.getString("titulo"));
+					temporadas.add(temporada);
+				}
+
+				serie.setTemporadas(temporadas);
 				series.add(serie);
 			}
 		} catch (SQLException e) {
@@ -116,36 +130,31 @@ public class SerieDao extends ObjetoDao implements InterfazDao<Serie> {
 		closeConnection();
 	}
 
-	
 	public ArrayList<Temporada> obtenerTemporadas(Serie serie) {
 		ArrayList<Temporada> temporadas = new ArrayList<>();
-		
+
 		connection = openConnection();
-		
+
 		String query = "SELECT * FROM temporadas WHERE serie_id = ?";
-		
+
 		try {
 			PreparedStatement ps = connection.prepareStatement(query);
 			ps.setInt(1, serie.getId());
 			ResultSet rs = ps.executeQuery();
-			
-			while(rs.next()) {
-				Temporada temporada = new Temporada(
-							rs.getInt("id"),
-							rs.getInt("num_temporada"),
-							rs.getString("titulo"),
-							serie
-						);
+
+			while (rs.next()) {
+				Temporada temporada = new Temporada(rs.getInt("id"), rs.getInt("num_temporada"), rs.getString("titulo"),
+						serie);
 				temporadas.add(temporada);
 			}
-			
+
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		
+
 		closeConnection();
-		
+
 		return temporadas;
 	}
 
@@ -153,17 +162,17 @@ public class SerieDao extends ObjetoDao implements InterfazDao<Serie> {
 	public void borrar(Serie serie) {
 		// TODO Auto-generated method stub
 		int serie_id = serie.getId();
-		
+
 		TemporadaDao temporadaDao = new TemporadaDao();
-		temporadaDao.borrarPorSerie(serie_id); 
-		
+		temporadaDao.borrarPorSerie(serie_id);
+
 		connection = openConnection();
-		
+
 		String query = "DELETE FROM series WHERE id = ?";
-		
+
 		try {
 			PreparedStatement ps = connection.prepareStatement(query);
-			ps.setInt(1, serie_id); 
+			ps.setInt(1, serie_id);
 			ps.executeUpdate();
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
